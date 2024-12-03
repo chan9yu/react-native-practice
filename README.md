@@ -1,2 +1,3 @@
-# react-native-masterclass
-react native masterclass
+# React Native Practice Repository
+
+react native practice repository
