@@ -1,3 +1,4 @@
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -10,11 +11,39 @@ import ShoppingScreen from './screens/ShoppingScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+const HomeIcon = ({ color, focused }: { color: string; focused: boolean }) => {
+	return <MaterialDesignIcons name={focused ? 'home' : 'home-outline'} color={color} size={26} />;
+};
+
+const ShoppingIcon = ({ color, focused }: { color: string; focused: boolean }) => {
+	return <MaterialDesignIcons name={focused ? 'shopping' : 'shopping-outline'} color={color} size={26} />;
+};
+
 const HomeTab = () => {
 	return (
-		<Tab.Navigator>
-			<Tab.Screen name={ROUTER_NAMES.HOME} component={HomeScreen} />
-			<Tab.Screen name={ROUTER_NAMES.SHOPPING} component={ShoppingScreen} />
+		<Tab.Navigator
+			screenOptions={{
+				tabBarStyle: { backgroundColor: 'black' },
+				tabBarActiveTintColor: 'white',
+				tabBarInactiveTintColor: 'white'
+			}}
+		>
+			<Tab.Screen
+				name={ROUTER_NAMES.HOME}
+				component={HomeScreen}
+				options={{
+					tabBarIcon: HomeIcon,
+					tabBarLabel: '홈'
+				}}
+			/>
+			<Tab.Screen
+				name={ROUTER_NAMES.SHOPPING}
+				component={ShoppingScreen}
+				options={{
+					tabBarIcon: ShoppingIcon,
+					tabBarLabel: '쇼핑'
+				}}
+			/>
 		</Tab.Navigator>
 	);
 };
