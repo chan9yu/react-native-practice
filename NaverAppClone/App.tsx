@@ -25,7 +25,8 @@ const HomeTab = () => {
 			screenOptions={{
 				tabBarStyle: { backgroundColor: 'black' },
 				tabBarActiveTintColor: 'white',
-				tabBarInactiveTintColor: 'white'
+				tabBarInactiveTintColor: 'white',
+				headerShown: false
 			}}
 		>
 			<Tab.Screen
