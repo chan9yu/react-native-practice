@@ -15,7 +15,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 		}
 
 		if (request.url !== null && request.url.startsWith('https://')) {
-			navigation.navigate(ROUTER_NAMES.BROWSER);
+			navigation.navigate(ROUTER_NAMES.BROWSER, { initialUrl: request.url });
 			return false;
 		}
 
@@ -23,7 +23,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 	};
 
 	return (
-		<SafeAreaView style={styles.safearea}>
+		<SafeAreaView style={styles.safeArea}>
 			<WebView
 				source={{ uri: 'https://m.naver.com/' }}
 				showsVerticalScrollIndicator={false}
@@ -35,7 +35,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 }
 
 const styles = StyleSheet.create({
-	safearea: {
+	safeArea: {
 		flex: 1
 	}
 });

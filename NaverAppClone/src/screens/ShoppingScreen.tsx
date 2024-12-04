@@ -8,7 +8,7 @@ type ShoppingScreenProps = NativeStackScreenProps<RootStackParamList>;
 
 export default function ShoppingScreen({ navigation }: ShoppingScreenProps) {
 	const handleMoveToBrowserScreen = () => {
-		navigation.navigate(ROUTER_NAMES.BROWSER);
+		navigation.navigate(ROUTER_NAMES.BROWSER, { initialUrl: 'https://m.naver.com' });
 	};
 
 	return (

@@ -10,7 +10,7 @@ export default function RootStack() {
 	return (
 		<Stack.Navigator>
 			<Stack.Screen name={ROUTER_NAMES.ROOT_TAB} component={RootTab} options={{ headerShown: false }} />
-			<Stack.Screen name={ROUTER_NAMES.BROWSER} component={BrowserScreen} />
+			<Stack.Screen name={ROUTER_NAMES.BROWSER} component={BrowserScreen} options={{ headerShown: false }} />
 		</Stack.Navigator>
 	);
 }
