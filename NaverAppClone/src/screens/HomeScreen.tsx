@@ -1,16 +1,18 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
-import type { OnShouldStartLoadWithRequest } from 'react-native-webview/lib/WebViewTypes';
+import { OnShouldStartLoadWithRequest } from 'react-native-webview/lib/WebViewTypes';
 
 import { ROUTER_NAMES, RootStackParamList } from '../navigations/constants';
+
+const HOME_URL = 'https://m.naver.com' as const;
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList>;
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
 	const handleShouldStartLoadRequest: OnShouldStartLoadWithRequest = request => {
-		if (request.url.startsWith('https://m.naver.com') || request.mainDocumentURL?.startsWith('https://m.naver.com')) {
+		if (request.url.startsWith(HOME_URL) || request.mainDocumentURL?.startsWith(HOME_URL)) {
 			return true;
 		}
 
@@ -25,7 +27,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			<WebView
-				source={{ uri: 'https://m.naver.com/' }}
+				source={{ uri: HOME_URL }}
 				showsVerticalScrollIndicator={false}
 				showsHorizontalScrollIndicator={false}
 				onShouldStartLoadWithRequest={handleShouldStartLoadRequest}

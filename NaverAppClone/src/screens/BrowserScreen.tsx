@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useMemo, useRef, useState } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, Share, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView, WebViewNavigation } from 'react-native-webview';
 import { WebViewProgressEvent } from 'react-native-webview/lib/WebViewTypes';
@@ -26,7 +26,6 @@ export default function BrowserScreen({ navigation, route }: ShoppingScreenProps
 	const webViewRef = useRef<WebView>(null);
 
 	const handleUrlChange = (event: WebViewNavigation) => {
-		console.log('### TEST', event);
 		setCanGoBack(event.canGoBack);
 		setCanGoForward(event.canGoForward);
 		setUrl(event.url);
@@ -56,6 +55,7 @@ export default function BrowserScreen({ navigation, route }: ShoppingScreenProps
 				<NavButton iconName="arrow-left" disabled={!canGoBack} onPress={() => webViewRef.current?.goBack()} />
 				<NavButton iconName="arrow-right" disabled={!canGoForward} onPress={() => webViewRef.current?.goForward()} />
 				<NavButton iconName="refresh" onPress={() => webViewRef.current?.reload()} />
+				<NavButton iconName="share-outline" onPress={() => Share.share({ message: url })} />
 			</View>
 		</SafeAreaView>
 	);
