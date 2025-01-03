@@ -3,11 +3,20 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import HomeScreen from '../screens/HomeScreen';
 import ShoppingScreen from '../screens/ShoppingScreen';
-import { ROUTER_NAMES } from './constants';
 
-const Tab = createBottomTabNavigator();
+export const ROOT_TAB_NAVIGATOR = {
+	HOME: 'Home',
+	SHOPPING: 'Shopping'
+} as const;
 
-export default function RootTab() {
+export type RootTabNavigatorParams = {
+	[ROOT_TAB_NAVIGATOR.HOME]: undefined;
+	[ROOT_TAB_NAVIGATOR.SHOPPING]: undefined;
+};
+
+const Tab = createBottomTabNavigator<RootTabNavigatorParams>();
+
+export default function RootTabNavigator() {
 	return (
 		<Tab.Navigator
 			screenOptions={{
@@ -18,7 +27,7 @@ export default function RootTab() {
 			}}
 		>
 			<Tab.Screen
-				name={ROUTER_NAMES.HOME}
+				name={ROOT_TAB_NAVIGATOR.HOME}
 				component={HomeScreen}
 				options={{
 					tabBarLabel: '홈',
@@ -28,7 +37,7 @@ export default function RootTab() {
 				}}
 			/>
 			<Tab.Screen
-				name={ROUTER_NAMES.SHOPPING}
+				name={ROOT_TAB_NAVIGATOR.SHOPPING}
 				component={ShoppingScreen}
 				options={{
 					tabBarLabel: '쇼핑',

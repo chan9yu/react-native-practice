@@ -1,69 +1,34 @@
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { WebView } from 'react-native-webview';
-import { OnShouldStartLoadWithRequest } from 'react-native-webview/lib/WebViewTypes';
 
-import { ROUTER_NAMES, RootStackParamList } from '../navigations/constants';
-import { useRef, useState } from 'react';
+import { ROOT_STACK_NAVIGATOR, RootStackNavigatorParams } from '../navigations/RootStack';
+import { ROOT_TAB_NAVIGATOR, RootTabNavigatorParams } from '../navigations/RootTab';
 
-const SHOPPING_URL = 'https://shopping.naver.com/ns/home' as const;
-
-type ShoppingScreenProps = NativeStackScreenProps<RootStackParamList>;
+type ShoppingScreenProps = CompositeScreenProps<
+	BottomTabScreenProps<RootTabNavigatorParams, typeof ROOT_TAB_NAVIGATOR.SHOPPING>,
+	NativeStackScreenProps<RootStackNavigatorParams, typeof ROOT_STACK_NAVIGATOR.ROOT_TAB>
+>;
 
 export default function ShoppingScreen({ navigation }: ShoppingScreenProps) {
-	const [refreshing, setRefreshing] = useState(false);
-
-	const webViewRef = useRef<WebView>(null);
-
-	const handleRefresh = () => {
-		setRefreshing(true);
-		webViewRef.current?.reload();
-	};
-
-	const handleWebViewLoad = () => {
-		setRefreshing(false);
-	};
-
-	const handleShouldStartLoadRequest: OnShouldStartLoadWithRequest = request => {
-		if (request.url.startsWith(SHOPPING_URL) || request.mainDocumentURL?.startsWith(SHOPPING_URL)) {
-			return true;
-		}
-
-		if (request.url !== null && request.url.startsWith('https://')) {
-			navigation.navigate(ROUTER_NAMES.BROWSER, { initialUrl: request.url });
-			return false;
-		}
-
-		return true;
+	const handleMoveToBrowserScreen = () => {
+		navigation.navigate(ROOT_STACK_NAVIGATOR.BROWSER);
 	};
 
 	return (
-		<SafeAreaView style={styles.safeArea}>
-			<ScrollView
-				contentContainerStyle={styles.scrollView}
-				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
-			>
-				<WebView
-					ref={webViewRef}
-					source={{ uri: SHOPPING_URL }}
-					showsVerticalScrollIndicator={false}
-					showsHorizontalScrollIndicator={false}
-					renderLoading={() => <></>}
-					startInLoadingState={true}
-					onShouldStartLoadWithRequest={handleShouldStartLoadRequest}
-					onLoad={handleWebViewLoad}
-				/>
-			</ScrollView>
+		<SafeAreaView style={styles.container}>
+			<Text>Shopping Screen</Text>
+			<TouchableOpacity onPress={handleMoveToBrowserScreen}>
+				<Text>Go To Brower</Text>
+			</TouchableOpacity>
 		</SafeAreaView>
 	);
 }
 
 const styles = StyleSheet.create({
-	safeArea: {
-		flex: 1
-	},
-	scrollView: {
+	container: {
 		flex: 1
 	}
 });
