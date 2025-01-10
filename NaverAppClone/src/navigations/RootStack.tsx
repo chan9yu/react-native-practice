@@ -10,7 +10,9 @@ export const ROOT_STACK_NAVIGATOR = {
 
 export type RootStackNavigatorParams = {
 	[ROOT_STACK_NAVIGATOR.ROOT_TAB]: undefined;
-	[ROOT_STACK_NAVIGATOR.BROWSER]: undefined;
+	[ROOT_STACK_NAVIGATOR.BROWSER]: {
+		initialUrl: string;
+	};
 };
 
 const Stack = createNativeStackNavigator<RootStackNavigatorParams>();
@@ -19,7 +21,7 @@ export default function RootStack() {
 	return (
 		<Stack.Navigator>
 			<Stack.Screen name={ROOT_STACK_NAVIGATOR.ROOT_TAB} component={RootTab} options={{ headerShown: false }} />
-			<Stack.Screen name={ROOT_STACK_NAVIGATOR.BROWSER} component={BrowserScreen} />
+			<Stack.Screen name={ROOT_STACK_NAVIGATOR.BROWSER} component={BrowserScreen} options={{ headerShown: false }} />
 		</Stack.Navigator>
 	);
 }

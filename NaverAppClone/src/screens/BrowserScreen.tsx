@@ -1,28 +1,80 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import { Animated, Share, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { WebView, WebViewProps } from 'react-native-webview';
 
+import NavButton from '../components/NavButton';
+import NaverButton from '../components/NaverButton';
+import ProgressBar from '../components/ProgressBar';
+import UrlDisplay from '../components/UrlDisplay';
 import { ROOT_STACK_NAVIGATOR, RootStackNavigatorParams } from '../navigations/RootStack';
 
 type BrowserScreenProps = NativeStackScreenProps<RootStackNavigatorParams, typeof ROOT_STACK_NAVIGATOR.BROWSER>;
 
-export default function BrowserScreen({ navigation }: BrowserScreenProps) {
-	const handleMoveToBrowserScreen = () => {
-		navigation.navigate(ROOT_STACK_NAVIGATOR.ROOT_TAB);
+export default function BrowserScreen({ navigation, route }: BrowserScreenProps) {
+	const { initialUrl } = route.params;
+
+	const [url, setUrl] = useState(initialUrl);
+	const [canGoBack, setCanGoBack] = useState(false);
+	const [canGoForward, setCanGoForward] = useState(false);
+
+	const urlTitle = useMemo(() => url.replace('https://', '').split('/')[0], [url]);
+
+	const progressAnim = useRef(new Animated.Value(0)).current;
+	const webViewRef = useRef<WebView>(null);
+
+	const handleUrlChange: WebViewProps['onNavigationStateChange'] = event => {
+		setCanGoBack(event.canGoBack);
+		setCanGoForward(event.canGoForward);
+		setUrl(event.url);
+	};
+
+	const handleLoadProgress: WebViewProps['onLoadProgress'] = event => {
+		progressAnim.setValue(event.nativeEvent.progress);
+	};
+
+	const handleLoadEnd: WebViewProps['onLoadEnd'] = () => {
+		progressAnim.setValue(0);
+	};
+
+	const handleShareUrl = () => {
+		Share.share({ message: url });
 	};
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<Text>Browser Screen</Text>
-			<TouchableOpacity onPress={handleMoveToBrowserScreen}>
-				<Text>Go To Home</Text>
-			</TouchableOpacity>
+			<UrlDisplay urlTitle={urlTitle} />
+			<ProgressBar progressAnim={progressAnim} />
+			<WebView
+				ref={webViewRef}
+				source={{ uri: initialUrl }}
+				onNavigationStateChange={handleUrlChange}
+				onLoadProgress={handleLoadProgress}
+				onLoadEnd={handleLoadEnd}
+			/>
+			<View style={styles.navigator}>
+				<NaverButton onPress={navigation.goBack} />
+				<NavButton iconName="arrow-left" disabled={!canGoBack} onPress={webViewRef.current?.goBack} />
+				<NavButton iconName="arrow-right" disabled={!canGoForward} onPress={webViewRef.current?.goForward} />
+				<NavButton iconName="refresh" onPress={webViewRef.current?.reload} />
+				<NavButton iconName="share-outline" onPress={handleShareUrl} />
+			</View>
 		</SafeAreaView>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1
+		flex: 1,
+		backgroundColor: 'black'
+	},
+	navigator: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		backgroundColor: 'black',
+		paddingVertical: 10,
+		paddingHorizontal: 40
 	}
 });
