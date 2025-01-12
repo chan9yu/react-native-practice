@@ -13,7 +13,7 @@ export default function LoginScreen() {
 	const { webViewRefs } = useWebViewContext();
 
 	const handleLoginRedirect = (event: WebViewNavigation) => {
-		if (event.url === 'https://www.naver.com/') {
+		if (event.url === 'https://m.naver.com/') {
 			webViewRefs.current.forEach(webview => webview.reload());
 			navigation.goBack();
 		}
