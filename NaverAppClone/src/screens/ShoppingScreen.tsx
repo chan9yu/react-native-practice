@@ -2,10 +2,11 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useRef, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { WebView, WebViewProps } from 'react-native-webview';
+import { RefreshControl, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import { WebView } from 'react-native-webview';
+import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 
+import { useWebViewContext } from '../contexts/WebViewProvider';
 import { ROOT_STACK_NAVIGATOR, RootStackNavigatorParams } from '../navigations/RootStack';
 import { ROOT_TAB_NAVIGATOR, RootTabNavigatorParams } from '../navigations/RootTab';
 
@@ -17,16 +18,25 @@ type ShoppingScreenProps = CompositeScreenProps<
 const BASE_URL = 'https://shopping.naver.com/ns/home' as const;
 
 export default function ShoppingScreen({ navigation }: ShoppingScreenProps) {
-	const webViewRef = useRef<WebView>(null);
+	const { addWebView } = useWebViewContext();
+
+	const webViewRef = useRef<WebView | null>(null);
 
 	const [refreshing, setRefreshing] = useState(false);
+
+	const callbackWebViewRef = (node: WebView | null) => {
+		if (node) {
+			webViewRef.current = node;
+			addWebView(node);
+		}
+	};
 
 	const handleRefresh = () => {
 		setRefreshing(true);
 		webViewRef.current?.reload();
 	};
 
-	const handleShouldStartLoadWithRequest: WebViewProps['onShouldStartLoadWithRequest'] = ({ url, mainDocumentURL }) => {
+	const handleShouldStartLoadWithRequest = ({ url, mainDocumentURL }: ShouldStartLoadRequest) => {
 		if (url.startsWith(BASE_URL) || mainDocumentURL?.startsWith(BASE_URL)) {
 			return true;
 		}
@@ -39,7 +49,7 @@ export default function ShoppingScreen({ navigation }: ShoppingScreenProps) {
 		return true;
 	};
 
-	const handleWebViewLoad: WebViewProps['onLoad'] = () => {
+	const handleWebViewLoad = () => {
 		setRefreshing(false);
 	};
 
@@ -50,7 +60,7 @@ export default function ShoppingScreen({ navigation }: ShoppingScreenProps) {
 				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
 			>
 				<WebView
-					ref={webViewRef}
+					ref={callbackWebViewRef}
 					source={{ uri: BASE_URL }}
 					showsHorizontalScrollIndicator={false}
 					showsVerticalScrollIndicator={false}

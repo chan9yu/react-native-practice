@@ -1,14 +1,14 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import WebViewProvider from './contexts/WebViewProvider';
 import RootStack from './navigations/RootStack';
 
 export default function App() {
 	return (
-		<SafeAreaProvider>
+		<WebViewProvider>
 			<NavigationContainer>
 				<RootStack />
 			</NavigationContainer>
-		</SafeAreaProvider>
+		</WebViewProvider>
 	);
 }

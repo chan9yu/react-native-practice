@@ -1,19 +1,24 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useMemo, useRef, useState } from 'react';
-import { Animated, Share, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { WebView, WebViewProps } from 'react-native-webview';
+import { Animated, SafeAreaView, Share, StyleSheet, View } from 'react-native';
+import { WebView } from 'react-native-webview';
+import type { WebViewNavigation, WebViewProgressEvent } from 'react-native-webview/lib/WebViewTypes';
 
 import NavButton from '../components/NavButton';
 import NaverButton from '../components/NaverButton';
 import ProgressBar from '../components/ProgressBar';
 import UrlDisplay from '../components/UrlDisplay';
+import { useWebViewContext } from '../contexts/WebViewProvider';
 import { ROOT_STACK_NAVIGATOR, RootStackNavigatorParams } from '../navigations/RootStack';
 
 type BrowserScreenProps = NativeStackScreenProps<RootStackNavigatorParams, typeof ROOT_STACK_NAVIGATOR.BROWSER>;
 
 export default function BrowserScreen({ navigation, route }: BrowserScreenProps) {
 	const { initialUrl } = route.params;
+	const { addWebView } = useWebViewContext();
+
+	const progressAnim = useRef(new Animated.Value(0)).current;
+	const webViewRef = useRef<WebView | null>(null);
 
 	const [url, setUrl] = useState(initialUrl);
 	const [canGoBack, setCanGoBack] = useState(false);
@@ -21,25 +26,33 @@ export default function BrowserScreen({ navigation, route }: BrowserScreenProps)
 
 	const urlTitle = useMemo(() => url.replace('https://', '').split('/')[0], [url]);
 
-	const progressAnim = useRef(new Animated.Value(0)).current;
-	const webViewRef = useRef<WebView>(null);
-
-	const handleUrlChange: WebViewProps['onNavigationStateChange'] = event => {
-		setCanGoBack(event.canGoBack);
-		setCanGoForward(event.canGoForward);
-		setUrl(event.url);
+	const callbackWebViewRef = (node: WebView | null) => {
+		if (node) {
+			webViewRef.current = node;
+			addWebView(node);
+		}
 	};
 
-	const handleLoadProgress: WebViewProps['onLoadProgress'] = event => {
+	const handleUrlChange = (event: WebViewNavigation) => {
+		setUrl(event.url);
+		setCanGoBack(event.canGoBack);
+		setCanGoForward(event.canGoForward);
+	};
+
+	const handleLoadProgress = (event: WebViewProgressEvent) => {
 		progressAnim.setValue(event.nativeEvent.progress);
 	};
 
-	const handleLoadEnd: WebViewProps['onLoadEnd'] = () => {
+	const handleLoadEnd = () => {
 		progressAnim.setValue(0);
 	};
 
-	const handleShareUrl = () => {
-		Share.share({ message: url });
+	const handleShareUrl = async () => {
+		try {
+			await Share.share({ message: url });
+		} catch (error) {
+			console.error('Error sharing URL:', error);
+		}
 	};
 
 	return (
@@ -47,7 +60,7 @@ export default function BrowserScreen({ navigation, route }: BrowserScreenProps)
 			<UrlDisplay urlTitle={urlTitle} />
 			<ProgressBar progressAnim={progressAnim} />
 			<WebView
-				ref={webViewRef}
+				ref={callbackWebViewRef}
 				source={{ uri: initialUrl }}
 				onNavigationStateChange={handleUrlChange}
 				onLoadProgress={handleLoadProgress}
