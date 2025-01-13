@@ -1,3 +1,4 @@
+import { useBackHandler } from '@react-native-community/hooks';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useMemo, useRef, useState } from 'react';
 import { Animated, SafeAreaView, Share, StyleSheet, View } from 'react-native';
@@ -11,6 +12,16 @@ import UrlDisplay from '../components/UrlDisplay';
 import { useWebViewContext } from '../contexts/WebViewProvider';
 import { ROOT_STACK_NAVIGATOR, RootStackNavigatorParams } from '../navigations/RootStack';
 
+const DISABLE_PINCH_ZOOM = `(function () {
+	const meta = document.createElement('meta');
+	meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+	meta.setAttribute('name', 'viewport');
+	document.getElementsByTagName('head')[0].appendChild(meta);
+
+	document.body.style['user-select'] = 'none';
+	document.body.style['-webkit-user-select'] = 'none';
+})();`;
+
 type BrowserScreenProps = NativeStackScreenProps<RootStackNavigatorParams, typeof ROOT_STACK_NAVIGATOR.BROWSER>;
 
 export default function BrowserScreen({ navigation, route }: BrowserScreenProps) {
@@ -23,6 +34,15 @@ export default function BrowserScreen({ navigation, route }: BrowserScreenProps)
 	const [url, setUrl] = useState(initialUrl);
 	const [canGoBack, setCanGoBack] = useState(false);
 	const [canGoForward, setCanGoForward] = useState(false);
+
+	useBackHandler(() => {
+		if (canGoBack) {
+			webViewRef.current?.goBack();
+			return true;
+		}
+
+		return false;
+	});
 
 	const urlTitle = useMemo(() => url.replace('https://', '').split('/')[0], [url]);
 
@@ -65,6 +85,9 @@ export default function BrowserScreen({ navigation, route }: BrowserScreenProps)
 				onNavigationStateChange={handleUrlChange}
 				onLoadProgress={handleLoadProgress}
 				onLoadEnd={handleLoadEnd}
+				injectedJavaScript={DISABLE_PINCH_ZOOM}
+				onMessage={() => {}}
+				allowsLinkPreview={false}
 			/>
 			<View style={styles.navigator}>
 				<NaverButton onPress={navigation.goBack} />
