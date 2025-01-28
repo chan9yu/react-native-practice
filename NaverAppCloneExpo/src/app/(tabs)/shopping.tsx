@@ -1,23 +1,68 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { useRef, useState } from 'react';
+import { RefreshControl, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import { WebView } from 'react-native-webview';
+import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
+
+const BASE_URL = 'https://shopping.naver.com/ns/home' as const;
 
 export default function ShoppingScreen() {
+	const webViewRef = useRef<WebView | null>(null);
+
+	const [refreshing, setRefreshing] = useState(false);
+
+	const handleRefresh = () => {
+		setRefreshing(true);
+		webViewRef.current?.reload();
+	};
+
+	const handleShouldStartLoadWithRequest = ({ url, mainDocumentURL }: ShouldStartLoadRequest) => {
+		if (url.startsWith(BASE_URL) || mainDocumentURL?.startsWith(BASE_URL)) {
+			return true;
+		}
+
+		if (url !== null && url.startsWith('https://')) {
+			router.navigate({
+				pathname: 'browser',
+				params: { initialUrl: url }
+			});
+
+			return false;
+		}
+
+		return true;
+	};
+
+	const handleWebViewLoad = () => {
+		setRefreshing(false);
+	};
+
 	return (
 		<SafeAreaView style={styles.container}>
-			<Text>Tab Shopping</Text>
-			<TouchableOpacity onPress={() => router.navigate({ pathname: 'browser' })}>
-				<Text>Go To Browser</Text>
-			</TouchableOpacity>
-			<MaterialCommunityIcons name="shopping" size={50} color={'red'} />
+			<ScrollView
+				contentContainerStyle={styles.scrollView}
+				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+			>
+				<WebView
+					ref={webViewRef}
+					source={{ uri: BASE_URL }}
+					showsHorizontalScrollIndicator={false}
+					showsVerticalScrollIndicator={false}
+					onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+					onLoad={handleWebViewLoad}
+					renderLoading={() => <></>}
+					startInLoadingState={true}
+				/>
+			</ScrollView>
 		</SafeAreaView>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center'
+		flex: 1
+	},
+	scrollView: {
+		flex: 1
 	}
 });
