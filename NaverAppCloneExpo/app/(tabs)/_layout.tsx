@@ -1,21 +1,32 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
 	return (
-		<Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
+		<Tabs
+			screenOptions={{
+				tabBarStyle: { backgroundColor: 'black' },
+				tabBarActiveTintColor: 'white',
+				tabBarInactiveTintColor: 'white',
+				headerShown: false
+			}}
+		>
 			<Tabs.Screen
 				name="index"
 				options={{
-					title: 'Home',
-					tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />
+					tabBarLabel: '홈',
+					tabBarIcon: ({ color, focused }) => (
+						<MaterialCommunityIcons name={focused ? 'home' : 'home-outline'} color={color} size={24} />
+					)
 				}}
 			/>
 			<Tabs.Screen
 				name="shopping"
 				options={{
-					title: 'Shopping',
-					tabBarIcon: ({ color }) => <FontAwesome size={28} name="shopping-cart" color={color} />
+					tabBarLabel: '쇼핑',
+					tabBarIcon: ({ color, focused }) => (
+						<MaterialCommunityIcons name={focused ? 'shopping' : 'shopping-outline'} color={color} size={24} />
+					)
 				}}
 			/>
 		</Tabs>
