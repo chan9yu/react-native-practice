@@ -12,7 +12,11 @@ export default function HomeScreen() {
 		}
 
 		if (url !== null && url.startsWith('https://')) {
-			router.navigate({ pathname: 'browser' });
+			router.navigate({
+				pathname: 'browser',
+				params: { initialUrl: url }
+			});
+
 			return false;
 		}
 
