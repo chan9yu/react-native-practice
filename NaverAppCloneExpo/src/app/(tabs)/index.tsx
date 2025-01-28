@@ -3,9 +3,19 @@ import { SafeAreaView, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 
+import { useWebViewContext } from '../../contexts/WebViewProvider';
+import useLogin from '../../hooks/useLogin';
+
 const BASE_URL = 'https://m.naver.com' as const;
 
 export default function HomeScreen() {
+	const { addWebView } = useWebViewContext();
+	const { loadLoggedIn, onMessage } = useLogin();
+
+	const callbackWebViewRef = (node: WebView | null) => {
+		node && addWebView(node);
+	};
+
 	const handleShouldStartLoadWithRequest = ({ url, mainDocumentURL }: ShouldStartLoadRequest) => {
 		if (url.startsWith(BASE_URL) || mainDocumentURL?.startsWith(BASE_URL)) {
 			return true;
@@ -26,10 +36,15 @@ export default function HomeScreen() {
 	return (
 		<SafeAreaView style={styles.container}>
 			<WebView
+				ref={callbackWebViewRef}
 				source={{ uri: BASE_URL }}
 				showsVerticalScrollIndicator={false}
 				showsHorizontalScrollIndicator={false}
 				onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+				onLoadEnd={() => {
+					loadLoggedIn();
+				}}
+				onMessage={onMessage}
 			/>
 		</SafeAreaView>
 	);

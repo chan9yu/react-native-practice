@@ -8,9 +8,11 @@ import NavButton from '../components/NavButton';
 import NaverButton from '../components/NaverButton';
 import ProgressBar from '../components/ProgressBar';
 import UrlDisplay from '../components/UrlDisplay';
+import { useWebViewContext } from '../contexts/WebViewProvider';
 
 export default function BrowserScreen() {
 	const { initialUrl } = useLocalSearchParams<{ initialUrl: string }>();
+	const { addWebView } = useWebViewContext();
 
 	const progressAnim = useRef(new Animated.Value(0)).current;
 	const webViewRef = useRef<WebView | null>(null);
@@ -20,6 +22,13 @@ export default function BrowserScreen() {
 	const [canGoForward, setCanGoForward] = useState(false);
 
 	const urlTitle = useMemo(() => url.replace('https://', '').split('/')[0], [url]);
+
+	const callbackWebViewRef = (node: WebView | null) => {
+		if (node) {
+			webViewRef.current = node;
+			addWebView(node);
+		}
+	};
 
 	const handleUrlChange = (event: WebViewNavigation) => {
 		setUrl(event.url);
@@ -48,7 +57,7 @@ export default function BrowserScreen() {
 			<UrlDisplay urlTitle={urlTitle} />
 			<ProgressBar progressAnim={progressAnim} />
 			<WebView
-				ref={webViewRef}
+				ref={callbackWebViewRef}
 				source={{ uri: initialUrl }}
 				onNavigationStateChange={handleUrlChange}
 				onLoadProgress={handleLoadProgress}

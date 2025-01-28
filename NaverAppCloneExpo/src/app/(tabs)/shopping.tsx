@@ -4,12 +4,23 @@ import { RefreshControl, SafeAreaView, ScrollView, StyleSheet } from 'react-nati
 import { WebView } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 
+import { useWebViewContext } from '../../contexts/WebViewProvider';
+
 const BASE_URL = 'https://shopping.naver.com/ns/home' as const;
 
 export default function ShoppingScreen() {
+	const { addWebView } = useWebViewContext();
+
 	const webViewRef = useRef<WebView | null>(null);
 
 	const [refreshing, setRefreshing] = useState(false);
+
+	const callbackWebViewRef = (node: WebView | null) => {
+		if (node) {
+			webViewRef.current = node;
+			addWebView(node);
+		}
+	};
 
 	const handleRefresh = () => {
 		setRefreshing(true);
@@ -44,7 +55,7 @@ export default function ShoppingScreen() {
 				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
 			>
 				<WebView
-					ref={webViewRef}
+					ref={callbackWebViewRef}
 					source={{ uri: BASE_URL }}
 					showsHorizontalScrollIndicator={false}
 					showsVerticalScrollIndicator={false}
