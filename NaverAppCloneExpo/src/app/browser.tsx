@@ -1,3 +1,4 @@
+import { useBackHandler } from '@react-native-community/hooks';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
 import { Animated, SafeAreaView, Share, StyleSheet, View } from 'react-native';
@@ -9,6 +10,18 @@ import NaverButton from '../components/NaverButton';
 import ProgressBar from '../components/ProgressBar';
 import UrlDisplay from '../components/UrlDisplay';
 import { useWebViewContext } from '../contexts/WebViewProvider';
+
+const DISABLE_PINCH_ZOOM = `
+	(function () {
+		const meta = document.createElement('meta');
+		meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+		meta.setAttribute('name', 'viewport');
+		document.getElementsByTagName('head')[0].appendChild(meta);
+
+		document.body.style['user-select'] = 'none';
+		document.body.style['-webkit-user-select'] = 'none';
+	})();
+`;
 
 export default function BrowserScreen() {
 	const { initialUrl } = useLocalSearchParams<{ initialUrl: string }>();
@@ -52,6 +65,15 @@ export default function BrowserScreen() {
 		}
 	};
 
+	useBackHandler(() => {
+		if (canGoBack) {
+			webViewRef.current?.goBack();
+			return true;
+		}
+
+		return false;
+	});
+
 	return (
 		<SafeAreaView style={styles.container}>
 			<UrlDisplay urlTitle={urlTitle} />
@@ -62,6 +84,9 @@ export default function BrowserScreen() {
 				onNavigationStateChange={handleUrlChange}
 				onLoadProgress={handleLoadProgress}
 				onLoadEnd={handleLoadEnd}
+				injectedJavaScript={DISABLE_PINCH_ZOOM}
+				onMessage={() => {}}
+				allowsLinkPreview={false}
 			/>
 			<View style={styles.navigator}>
 				<NaverButton onPress={router.back} />
