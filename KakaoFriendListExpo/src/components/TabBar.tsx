@@ -40,6 +40,6 @@ const styles = StyleSheet.create({
 	container: {
 		flexDirection: 'row',
 		borderTopWidth: 0.5,
-		borderColor: 'grey'
+		borderColor: 'lightgrey'
 	}
 });

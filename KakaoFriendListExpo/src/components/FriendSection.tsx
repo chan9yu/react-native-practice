@@ -1,17 +1,18 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { GestureResponderEvent, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-type FriendSectionProps = {
-	friendProfileLen: number;
-	isOpened: boolean;
-	onPressArrow: (event: GestureResponderEvent) => void;
-};
+import { useFriendListStore } from '../store/friend';
+import { useProfileStore } from '../store/profile';
 
-export default function FriendSection({ friendProfileLen, isOpened, onPressArrow }: FriendSectionProps) {
+export default function FriendSection() {
+	const isOpened = useFriendListStore(state => state.isOpened);
+	const onToggle = useFriendListStore(state => state.actions.onToggle);
+	const friendCount = useProfileStore(state => state.actions.getFriendCount)();
+
 	return (
 		<View style={styles.container}>
-			<Text style={styles.text}>친구 {friendProfileLen}</Text>
-			<TouchableOpacity onPress={onPressArrow}>
+			<Text style={styles.text}>친구 {friendCount}</Text>
+			<TouchableOpacity hitSlop={{ top: 15, bottom: 15 }} onPress={onToggle}>
 				<MaterialIcons name={isOpened ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} size={24} color="lightgrey" />
 			</TouchableOpacity>
 		</View>

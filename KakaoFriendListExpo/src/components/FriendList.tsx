@@ -1,14 +1,13 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { Profile } from '../services/dummyData';
+import { useFriendListStore } from '../store/friend';
+import { useProfileStore } from '../store/profile';
 import ProfileBox from './ProfileBox';
 
-type FriendListProps = {
-	friendProfiles: Profile[];
-	isOpened: boolean;
-};
+export default function FriendList() {
+	const isOpened = useFriendListStore(state => state.isOpened);
+	const friendProfiles = useProfileStore(state => state.friendProfiles);
 
-export default function FriendList({ friendProfiles, isOpened }: FriendListProps) {
 	if (!isOpened) {
 		return null;
 	}

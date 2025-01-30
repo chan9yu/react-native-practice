@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -9,14 +8,10 @@ import Header from '../components/Header';
 import ProfileBox from '../components/ProfileBox';
 import Spacing from '../components/Spacing';
 import TabBar from '../components/TabBar';
-import { friendProfiles, myProfile } from '../services/dummyData';
+import { useProfileStore } from '../store/profile';
 
 export default function HomeScreen() {
-	const [isOpened, setIsOpened] = useState(true);
-
-	const handlePressArrow = () => {
-		setIsOpened(prev => !prev);
-	};
+	const myProfile = useProfileStore(state => state.myProfile);
 
 	return (
 		<SafeAreaView style={styles.container} edges={['top', 'right', 'bottom', 'left']}>
@@ -27,8 +22,8 @@ export default function HomeScreen() {
 				<Spacing height={15} />
 				<Division />
 				<Spacing height={12} />
-				<FriendSection friendProfileLen={friendProfiles.length} isOpened={isOpened} onPressArrow={handlePressArrow} />
-				<FriendList friendProfiles={friendProfiles} isOpened={isOpened} />
+				<FriendSection />
+				<FriendList />
 			</View>
 			<TabBar />
 		</SafeAreaView>
