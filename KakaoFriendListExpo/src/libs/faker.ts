@@ -9,9 +9,9 @@ export type Profile = {
 
 export const generateProfile = (): Profile => ({
 	id: faker.string.uuid(),
-	uri: faker.image.url(),
+	uri: faker.image.url({ width: 150, height: 150 }),
 	name: faker.person.firstName(),
-	introduction: faker.word.sample()
+	introduction: Math.random() < 0.5 ? '' : faker.lorem.sentence(5)
 });
 
 export const generateProfiles = (count: number): Profile[] => Array.from({ length: count }, generateProfile);

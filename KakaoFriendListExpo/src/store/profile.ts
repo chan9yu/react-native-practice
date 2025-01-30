@@ -13,7 +13,7 @@ type ProfileStore = {
 
 export const useProfileStore = create<ProfileStore>((set, get) => ({
 	myProfile: generateProfile(),
-	friendProfiles: generateProfiles(14),
+	friendProfiles: generateProfiles(250),
 	actions: {
 		getFriendCount: () => get().friendProfiles.length,
 		addFriend: () => set(state => ({ friendProfiles: [...state.friendProfiles, generateProfile()] })),
