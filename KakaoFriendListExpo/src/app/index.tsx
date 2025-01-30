@@ -1,0 +1,47 @@
+import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import Division from '../components/Division';
+import FriendList from '../components/FriendList';
+import FriendSection from '../components/FriendSection';
+import Header from '../components/Header';
+import ProfileBox from '../components/ProfileBox';
+import Spacing from '../components/Spacing';
+import TabBar from '../components/TabBar';
+import { friendProfiles, myProfile } from '../services/dummyData';
+
+export default function HomeScreen() {
+	const [isOpened, setIsOpened] = useState(true);
+
+	const handlePressArrow = () => {
+		setIsOpened(prev => !prev);
+	};
+
+	return (
+		<SafeAreaView style={styles.container} edges={['top', 'right', 'bottom', 'left']}>
+			<View style={styles.main}>
+				<Header />
+				<Spacing height={10} />
+				<ProfileBox imageUri={myProfile.uri} introduction={myProfile.introduction} name={myProfile.name} isMe />
+				<Spacing height={15} />
+				<Division />
+				<Spacing height={12} />
+				<FriendSection friendProfileLen={friendProfiles.length} isOpened={isOpened} onPressArrow={handlePressArrow} />
+				<FriendList friendProfiles={friendProfiles} isOpened={isOpened} />
+			</View>
+			<TabBar />
+		</SafeAreaView>
+	);
+}
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		backgroundColor: '#fff'
+	},
+	main: {
+		flex: 1,
+		paddingHorizontal: 15
+	}
+});

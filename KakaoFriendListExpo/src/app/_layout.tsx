@@ -1,9 +1,12 @@
 import { Stack } from 'expo-router/stack';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 
 export default function Layout() {
 	return (
-		<Stack>
-			<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-		</Stack>
+		<SafeAreaProvider initialMetrics={initialWindowMetrics}>
+			<Stack screenOptions={{ headerShown: false }}>
+				<Stack.Screen name="index" />
+			</Stack>
+		</SafeAreaProvider>
 	);
 }
