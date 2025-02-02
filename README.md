@@ -1,53 +1,14 @@
-# React Native Practice
+# react-native-practice
 
-⚛️ React Native Practice
+> ⚛️ React Native Practice Repository
+
+리액트 네이티브 연습 레포지토리 (React Native CLI, Expo)
+
+- [kakao friend list app, React Native CLI](KakaoFriendListExpo/)
+- [kakao friend list app, Expo](KakaoFriendList/)
+- [loop tube app, React Native CLI](LoopTube/)
+- [loop tube app, Expo](LoopTubeExpo/)
+- [naver app clone app, React Native CLI](NaverAppClone/)
+- [naver app clone app, Expo](NaverAppCloneExpo/)
 
 <br />
-
-## Clean Guide
-
-### Android
-
-1. android 디렉토리 이동
-
-```bash
-cd android
-```
-
-2. Gradle Clean
-
-```bash
-./gradlew clean
-```
-
-3. 프로젝트 루트로 이동
-
-```bash
-cd ..
-```
-
-### iOS
-
-1. ios 디렉토리 이동
-
-```bash
-cd ios
-```
-
-2. CocoaPods 캐시 클린
-
-```bash
-pod cache clean --all
-```
-
-3. Pod 설치
-
-```bash
-pod install
-```
-
-4. 프로젝트 루트로 이동
-
-```bash
-cd ..
-```
