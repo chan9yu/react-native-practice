@@ -1,17 +1,18 @@
-import { StyleSheet, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ComponentProps } from 'react';
+import { StyleSheet, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
 
 type InputProps = {
 	iconName?: ComponentProps<typeof MaterialIcons>['name'];
+	onPressIcon?: ComponentProps<typeof TouchableOpacity>['onPress'];
 } & TextInputProps;
 
-export default function Input({ iconName, ...rest }: InputProps) {
+export default function Input({ iconName, onPressIcon, ...rest }: InputProps) {
 	return (
 		<View style={styles.container}>
 			<TextInput style={styles.input} {...rest} />
 			{iconName && (
-				<TouchableOpacity hitSlop={10}>
+				<TouchableOpacity hitSlop={10} onPress={onPressIcon}>
 					<MaterialIcons name={iconName} size={24} color="#AEAEB2" />
 				</TouchableOpacity>
 			)}
