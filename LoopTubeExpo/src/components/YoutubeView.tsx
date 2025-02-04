@@ -1,72 +1,51 @@
-import { useMemo } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
-import WebView from 'react-native-webview';
+import { useEffect, useMemo, useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { WebView } from 'react-native-webview';
+import type { WebViewMessageEvent, WebViewSource } from 'react-native-webview/lib/WebViewTypes';
 
-const YT_WIDTH = Dimensions.get('window').width;
-const YT_HEIGHT = YT_WIDTH * (9 / 16);
+import { createYouTubeEmbedHTML, PLAYER_STATES, YT_SIZES } from '../libs/youtubePlayer';
+import { usePlayerStore } from '../store/player';
+import { useWebViewStore } from '../store/webView';
 
 type YoutubeViewProps = {
 	youtubeId: string;
 };
 
 export default function YoutubeView({ youtubeId }: YoutubeViewProps) {
-	const source = useMemo(() => {
-		const html = `
-			<!DOCTYPE html>
-			<html>
-				<head>
-					<meta name="viewport" content="width=device-width, initial-scale=1">
-				</head>
-			
-				<body style="margin: 0; padding: 0;">
-					<div id="player"></div>
-			
-					<script>
-						var tag = document.createElement('script');
-			
-						tag.src = 'https://www.youtube.com/iframe_api';
-						var firstScriptTag = document.getElementsByTagName('script')[0];
-						firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-			
-						var player;
-						function onYouTubeIframeAPIReady() {
-							player = new YT.Player('player', {
-								height: '${YT_HEIGHT}',
-								width: '${YT_WIDTH}',
-								videoId: '${youtubeId}',
-								events: {
-									onReady: onPlayerReady,
-									onStateChange: onPlayerStateChange
-								}
-							});
-						}
-			
-						function postMessageToRN(type, data) {
-							const message = JSON.stringify({ type, data });
-							window.ReactNativeWebView.postMessage(message);
-						}
-			
-						function onPlayerReady(event) {
-							postMessageToRN('duration', player.getDuration());
-						}
-			
-						function onPlayerStateChange(event) {
-							postMessageToRN('player-state', event.data);
-						}				
-					</script>
-				</body>
-			</html>
-    `;
+	const webViewRef = useRef<WebView | null>(null);
 
-		return {
-			html
-		};
-	}, [youtubeId]);
+	const setWebViewRef = useWebViewStore(state => state.setWebViewRef);
+	const setPlaying = usePlayerStore(state => state.setPlaying);
+
+	useEffect(() => {
+		setWebViewRef(webViewRef);
+	}, [webViewRef, setWebViewRef]);
+
+	const source: WebViewSource = useMemo(
+		() => ({
+			html: createYouTubeEmbedHTML(youtubeId)
+		}),
+		[youtubeId]
+	);
+
+	const handleWebViewMessage = (event: WebViewMessageEvent) => {
+		const { data, type } = JSON.parse(event.nativeEvent.data);
+
+		if (type === 'player-state') {
+			setPlaying(data === PLAYER_STATES.PLAYING);
+		}
+	};
 
 	return (
 		<View style={styles.container}>
 			{youtubeId.length > 0 && (
-				<WebView source={source} allowsInlineMediaPlayback mediaPlaybackRequiresUserAction={false} />
+				<WebView
+					ref={webViewRef}
+					source={source}
+					allowsInlineMediaPlayback
+					mediaPlaybackRequiresUserAction={false}
+					onMessage={handleWebViewMessage}
+				/>
 			)}
 		</View>
 	);
@@ -74,8 +53,8 @@ export default function YoutubeView({ youtubeId }: YoutubeViewProps) {
 
 const styles = StyleSheet.create({
 	container: {
-		width: YT_WIDTH,
-		height: YT_HEIGHT,
+		width: YT_SIZES.WIDTH,
+		height: YT_SIZES.HEIGHT,
 		backgroundColor: '#4A4A4A'
 	}
 });

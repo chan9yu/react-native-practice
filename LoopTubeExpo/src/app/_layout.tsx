@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router/stack';
-import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
+import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function Layout() {
 	return (
