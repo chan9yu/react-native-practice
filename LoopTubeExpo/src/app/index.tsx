@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Alert, Platform, StatusBar, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Controller from '../components/Controller';
 import Input from '../components/Input';
 import YoutubeView from '../components/YoutubeView';
 
@@ -33,6 +34,7 @@ export default function HomeScreen() {
 				onChangeText={setUrl}
 			/>
 			<YoutubeView youtubeId={youtubeId} />
+			<Controller />
 		</SafeAreaView>
 	);
 }
