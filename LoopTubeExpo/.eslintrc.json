@@ -2,9 +2,11 @@
 	"root": true,
 	"extends": ["expo", "prettier"],
 	"ignorePatterns": ["/dist/*"],
-	"plugins": ["prettier"],
+	"plugins": ["prettier", "simple-import-sort"],
 	"rules": {
 		"react/react-in-jsx-scope": "off",
-		"prettier/prettier": "error"
+		"prettier/prettier": "error",
+		"simple-import-sort/imports": "error",
+		"simple-import-sort/exports": "error"
 	}
 }
