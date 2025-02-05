@@ -1,5 +1,15 @@
 import { Dimensions } from 'react-native';
 
+/** 📌 Youtube Player WebView와 통신에 사용되는 이벤트 타입 */
+export const WEBVIEW_EVENTS = {
+	PLAYER_STATE: 'player-state',
+	DURATION: 'duration',
+	CURRENT_TIME: 'current-time'
+} as const;
+
+export type WebViewEventKey = keyof typeof WEBVIEW_EVENTS;
+export type WebViewEventValue = (typeof WEBVIEW_EVENTS)[WebViewEventKey];
+
 /** 📌 YouTube Player의 상태 값 정의 */
 export const PLAYER_STATES = {
 	UNSTARTED: -1,
@@ -58,11 +68,11 @@ export const createYouTubeEmbedHTML = (videoId: string) => `
         }
 
         function onPlayerReady(event) {
-          postMessageToRN('duration', player.getDuration());
+          postMessageToRN('${WEBVIEW_EVENTS.DURATION}', player.getDuration());
         }
 
         function onPlayerStateChange(event) {
-          postMessageToRN('player-state', event.data);
+          postMessageToRN('${WEBVIEW_EVENTS.PLAYER_STATE}', event.data);
         }
       </script>
     </body>

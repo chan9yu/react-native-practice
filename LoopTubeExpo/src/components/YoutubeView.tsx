@@ -3,7 +3,13 @@ import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import type { WebViewMessageEvent, WebViewSource } from 'react-native-webview/lib/WebViewTypes';
 
-import { createYouTubeEmbedHTML, PLAYER_STATES, YT_SIZES } from '../libs/youtubePlayer';
+import {
+	createYouTubeEmbedHTML,
+	PLAYER_STATES,
+	WEBVIEW_EVENTS,
+	WebViewEventValue,
+	YT_SIZES
+} from '../libs/youtubePlayer';
 import { usePlayerStore } from '../store/player';
 import { useWebViewStore } from '../store/webView';
 
@@ -14,12 +20,9 @@ type YoutubeViewProps = {
 export default function YoutubeView({ youtubeId }: YoutubeViewProps) {
 	const webViewRef = useRef<WebView | null>(null);
 
-	const setWebViewRef = useWebViewStore(state => state.setWebViewRef);
-	const setPlaying = usePlayerStore(state => state.setPlaying);
-
-	useEffect(() => {
-		setWebViewRef(webViewRef);
-	}, [webViewRef, setWebViewRef]);
+	const playing = usePlayerStore(state => state.playing);
+	const { setCurrentTimeInSec, setDurationInSec, setPlaying } = usePlayerStore(state => state.actions);
+	const { setWebViewRef, postCurrentTimeMessage } = useWebViewStore(state => state.actions);
 
 	const source: WebViewSource = useMemo(
 		() => ({
@@ -31,10 +34,32 @@ export default function YoutubeView({ youtubeId }: YoutubeViewProps) {
 	const handleWebViewMessage = (event: WebViewMessageEvent) => {
 		const { data, type } = JSON.parse(event.nativeEvent.data);
 
-		if (type === 'player-state') {
-			setPlaying(data === PLAYER_STATES.PLAYING);
+		switch (type as WebViewEventValue) {
+			case WEBVIEW_EVENTS.PLAYER_STATE:
+				setPlaying(data === PLAYER_STATES.PLAYING);
+				break;
+			case WEBVIEW_EVENTS.DURATION:
+				setDurationInSec(data);
+				break;
+			case WEBVIEW_EVENTS.CURRENT_TIME:
+				setCurrentTimeInSec(data);
+				break;
 		}
 	};
+
+	useEffect(() => {
+		setWebViewRef(webViewRef);
+	}, [setWebViewRef]);
+
+	useEffect(() => {
+		if (playing) {
+			const intervalId = setInterval(postCurrentTimeMessage, 50);
+
+			return () => {
+				clearInterval(intervalId);
+			};
+		}
+	}, [playing, postCurrentTimeMessage]);
 
 	return (
 		<View style={styles.container}>

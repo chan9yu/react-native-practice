@@ -1,13 +1,18 @@
 import queryString from 'query-string';
 import { useState } from 'react';
-import { Alert, Platform, StatusBar, StyleSheet } from 'react-native';
+import { Alert, Platform, StatusBar, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Controller from '../components/Controller';
 import Input from '../components/Input';
 import YoutubeView from '../components/YoutubeView';
+import { usePlayerStore } from '../store/player';
+import { formatTime } from '../utils/format';
 
 export default function HomeScreen() {
+	const durationInSec = usePlayerStore(state => state.durationInSec);
+	const currentTimeInSec = usePlayerStore(state => state.currentTimeInSec);
+
 	const [url, setUrl] = useState('https://www.youtube.com/watch?v=HfaIcB4Ogxk');
 	const [youtubeId, setYoutubeId] = useState('');
 
@@ -34,6 +39,9 @@ export default function HomeScreen() {
 				onChangeText={setUrl}
 			/>
 			<YoutubeView youtubeId={youtubeId} />
+			<Text style={styles.timeText}>
+				{formatTime(Math.floor(currentTimeInSec))} / {formatTime(Math.floor(durationInSec))}
+			</Text>
 			<Controller />
 		</SafeAreaView>
 	);
@@ -44,5 +52,12 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: '#242424',
 		paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
+	},
+	timeText: {
+		alignSelf: 'flex-end',
+		color: '#AEAEB2',
+		fontSize: 13,
+		marginTop: 15,
+		marginRight: 20
 	}
 });
