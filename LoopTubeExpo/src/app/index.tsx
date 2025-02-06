@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Controller from '../components/Controller';
 import Input from '../components/Input';
+import SeekBar from '../components/SeekBar';
 import YoutubeView from '../components/YoutubeView';
 import { usePlayerStore } from '../store/player';
 import { formatTime } from '../utils/format';
@@ -39,6 +40,7 @@ export default function HomeScreen() {
 				onChangeText={setUrl}
 			/>
 			<YoutubeView youtubeId={youtubeId} />
+			<SeekBar />
 			<Text style={styles.timeText}>
 				{formatTime(Math.floor(currentTimeInSec))} / {formatTime(Math.floor(durationInSec))}
 			</Text>
