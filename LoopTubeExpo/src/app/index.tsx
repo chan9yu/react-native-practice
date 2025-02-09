@@ -14,7 +14,7 @@ export default function HomeScreen() {
 	const durationInSec = usePlayerStore(state => state.durationInSec);
 	const currentTimeInSec = usePlayerStore(state => state.currentTimeInSec);
 
-	const [url, setUrl] = useState('https://www.youtube.com/watch?v=HfaIcB4Ogxk');
+	const [url, setUrl] = useState('');
 	const [youtubeId, setYoutubeId] = useState('');
 
 	const handlePressOpenLink = () => {
