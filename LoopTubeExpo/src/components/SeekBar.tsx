@@ -7,8 +7,11 @@ import { useWebViewStore } from '../store/webView';
 
 export default function SeekBar() {
 	const { pauseVideo, playVideo, seekTo } = useWebViewStore(state => state.actions);
+
 	const durationInSec = usePlayerStore(state => state.durationInSec);
 	const currentTimeInSec = usePlayerStore(state => state.currentTimeInSec);
+	const repeatStartInSec = usePlayerStore(state => state.repeatStartInSec);
+	const repeatEndInSec = usePlayerStore(state => state.repeatEndInSec);
 
 	const seekBarAnim = useRef(new Animated.Value(0)).current;
 
@@ -54,10 +57,16 @@ export default function SeekBar() {
 		})
 	};
 
+	const repeatStyle = (time: number): ViewStyle => ({
+		left: (time / durationInSec) * YT_SIZES.WIDTH
+	});
+
 	return (
 		<View style={styles.container}>
 			<Animated.View style={[styles.progress, seekBarStyle]} />
 			<Animated.View style={[styles.thumb, thumbStyle]} {...panResponder.panHandlers} />
+			{repeatStartInSec !== null && <View style={[styles.repeat, repeatStyle(repeatStartInSec)]} />}
+			{repeatEndInSec !== null && <View style={[styles.repeat, repeatStyle(repeatEndInSec)]} />}
 		</View>
 	);
 }
@@ -78,6 +87,14 @@ const styles = StyleSheet.create({
 		height: 14,
 		borderRadius: 7,
 		backgroundColor: '#00DDA8',
+		position: 'absolute',
+		top: -5.5
+	},
+	repeat: {
+		width: 14,
+		height: 14,
+		borderRadius: 7,
+		backgroundColor: 'red',
 		position: 'absolute',
 		top: -5.5
 	}
